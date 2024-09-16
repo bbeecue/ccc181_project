@@ -1,0 +1,83 @@
+@font-face {
+    font-family: "Montserrat";
+    src: url('fonts/Montserrat-Regular.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: "Montserrat-Bold";
+    src: url('fonts/Montserrat-Bold.ttf') format('truetype');
+  }  
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: antiquewhite;
+}
+
+/*----NAVBAR STYLES----*/
+.navbar{
+    font-family: "Montserrat-Bold";
+    background-color: rgb(79, 22, 22);
+}
+
+.navbar-brand{
+    color: antiquewhite;
+}
+.navbar-brand:hover{
+    color: antiquewhite;
+}
+#navbarNav{
+    width: 100%;
+    margin-left: 14%;
+}
+
+#navbarNav a{
+    color: antiquewhite;
+}   
+
+#navbarNav a:hover{
+    color: rgb(230, 171, 144);
+}
+
+.nav-item .nav-link.active { 
+    background-color: antiquewhite !important; 
+    color: rgb(79, 22, 22) !important;
+    border-radius: 5px;
+}
+
+
+/*---TABLE STYLES---*/
+.table-title{
+    text-align: center;
+    font-size: 40px;
+    font-family: "Montserrat-Bold";
+    color: rgb(79, 22, 22);
+}
+
+.table th{
+    background-color: rgb(79, 22, 22);  
+    color: antiquewhite; 
+}
+
+.dropdown .btn.btn-secondary{
+    background-color: rgb(79, 22, 22);
+    color: antiquewhite;   
+    
+}
+.dropdown-menu{
+    background-color: rgb(79, 22, 22); 
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); 
+}
+
+.dropdown-menu a{
+    color: antiquewhite; 
+    box-shadow: 5px;
+}
+
+.form-inline .btn.btn-secondary{
+    background-color: rgb(79, 22, 22);
+    color: antiquewhite;
+}
+
+.form-inline .btn.btn-secondary:hover{
+    background-color: rgb(134, 58, 58);
+    color: rgb(230, 171, 144);
+}
