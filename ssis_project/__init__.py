@@ -1,31 +1,26 @@
-from flask import Flask, request, jsonify, render_template
-import mysql.connector
-from mysql.connector import Error
-from ssis_project.settings import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+# 2022-0380/ssis_project/__init__.py
 
+from flask import Flask
+from mysql.connector import connect, Error
+from settings import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+from .main import main_bp
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-#connect to MySQL database
-try:
-    db = mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME
-    )
-    cursor = db.cursor()
-except Error as e:
-    print("Error connecting to MySQL", e)
+    # initialize/establish database connection
+    try:
+        db = connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
+        )
+        app.config['db'] = db
+    except Error as e:
+        print(f"Error connecting to MySQL: {e}")
 
-@app.route('/')
-def main():
-    return render_template("base.html")
+    # register the blueprints
+    app.register_blueprint(main_bp)
 
-@app.route('/test')
-def students():
-    return render_template("student.html")
-
-
-if __name__ == '__main__':
-    app.run()
+    return app
