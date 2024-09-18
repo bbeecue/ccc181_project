@@ -53,8 +53,8 @@
                           </div>
               
                           <div class="modal-body">
-                            <form action="{{ url_for('main.student_form') }}" method="POST">
-                                <!-- ID Number Fields (Year and Unique Number) -->
+                            <form action="{{ url_for('main.student_form') }}" method="POST"> <!--to pass data didto sa route-->
+                                
                                 <div class="mb-3 row">
                                     <label for="student-id-year" class="form-label">ID Number</label>
                                     <div class="col">
@@ -66,7 +66,7 @@
                                     </div>
                                 </div>
                         
-                                <!-- First Name and Last Name Fields -->
+                                <!--student name-->
                                 <div class="mb-3">
                                     <label for="first-name" class="form-label">First Name</label>
                                     <input type="text" id="first-name" class="form-control" name="first_name" placeholder="Enter first name" required>
@@ -76,7 +76,7 @@
                                     <input type="text" id="last-name" class="form-control" name="last_name" placeholder="Enter last name" required>
                                 </div>
                         
-                                <!-- Gender Radio Buttons -->
+                                <!-- gender -->
                                 <div class="mb-3">
                                     <label class="form-label">Gender</label>
                                     <div class="d-flex justify-content-center align-items-center">
@@ -95,7 +95,7 @@
                                     </div>
                                 </div>
                         
-                                <!-- Program Dropdown and Year Level Spinner -->
+                                <!-- program and year -->
                                 <div class="mb-3 row">
                                     <div class="input-group mb-3">
                                         <div class="input-group-prepend">
