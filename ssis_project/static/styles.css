@@ -81,3 +81,50 @@ body{
     background-color: rgb(134, 58, 58);
     color: rgb(230, 171, 144);
 }
+
+
+
+/*---MODAL STYLES---*/
+
+.modal-dialog{
+    max-width: 600px;
+}
+#inputGroupSelect01{
+    width: 480px;
+}
+
+.input-id{
+    align-items: center;
+}
+
+.input-id .form-control{
+    width: 200px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.input-group .form-control{
+    width: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.modal-header{
+    background-color: rgb(79, 22, 22);
+    color: antiquewhite;
+    font-family: "Montserrat-Bold";
+}
+
+.modal-footer{
+    background-color: rgb(79, 22, 22);
+    color: antiquewhite;
+}
+
+
+.modal-body{
+    font-family: "Montserrat";
+    background-color: antiquewhite !important; 
+    color: rgb(79, 22, 22) !important;
+}
