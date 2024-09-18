@@ -4,10 +4,10 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{ url_for('main.student_form') }}"">Students</a>
+            <a class="nav-link" href="{{ url_for('main.student_form') }}">Students</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.college_form') }}">Colleges</a>
+            <a class="nav-link active" aria-current="page" href="{{ url_for('main.college_form') }}">Colleges</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('main.program_form') }}">Programs</a>
@@ -21,40 +21,31 @@
 <div class="container-fluid">
     <div class="row justify-content-center mb-4">
         <div class="col-md-10 text-center mt-4">
-            <h2 class="table-title mb-4">Student List</h2>
+            <h2 class="table-title mb-4">College List</h2>
             <div class="d-flex justify-content-between align-items-center">
               
                 <form class="form-inline d-flex" role="search">
-                  <div class="dropdown me-2">
-                    <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Search by...
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">ID Number</a></li>
-                      <li><a class="dropdown-item" href="#">Name</a></li>
-                      <li><a class="dropdown-item" href="#">College</a></li>
-                    </ul>
-                  </div>
                     <input class="form-control form-control-lg me-2" type="search" placeholder="Search" aria-label="Search" style="width: 300px;">
                     <button class="btn btn-secondary btn-lg" type="submit">Search</button>
                 </form>
                 
                 
                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modal-add-student">
-                  Add Student
+                  Add College
               </button>
               
+              <!--
               <div class="modal fade modal-lg" id="modal-add-student" tabindex="-1" aria-labelledby="modal-add-student-label" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                           <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="modal-add-student-label">Add Student</h1>
+                              <h1 class="modal-title fs-5" id="modal-add-student-label">Add College</h1>
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
               
                           <div class="modal-body">
-                            <form action="{{ url_for('main.student_form') }}" method="POST">
-                                <!-- ID Number Fields (Year and Unique Number) -->
+                            <form action="{{ url_for('main.college_form') }}" method="POST">
+                                 ID Number Fields (Year and Unique Number)
                                 <div class="mb-3 row">
                                     <label for="student-id-year" class="form-label">ID Number</label>
                                     <div class="col">
@@ -64,9 +55,9 @@
                                     <div class="col">
                                         <input type="text" id="student-id-unique" class="form-control" name="id_number_unique" placeholder="Unique Number (e.g., 0001)" pattern="\d{4}" required>
                                     </div>
-                                </div>
+                                </div> -->
                         
-                                <!-- First Name and Last Name Fields -->
+                                <!-- First Name and Last Name Fields 
                                 <div class="mb-3">
                                     <label for="first-name" class="form-label">First Name</label>
                                     <input type="text" id="first-name" class="form-control" name="first_name" placeholder="Enter first name" required>
@@ -74,9 +65,9 @@
                                 <div class="mb-3">
                                     <label for="last-name" class="form-label">Last Name</label>
                                     <input type="text" id="last-name" class="form-control" name="last_name" placeholder="Enter last name" required>
-                                </div>
+                                </div>-->
                         
-                                <!-- Gender Radio Buttons -->
+                                <!-- Gender Radio Buttons 
                                 <div class="mb-3">
                                     <label class="form-label">Gender</label>
                                     <div class="d-flex justify-content-center align-items-center">
@@ -93,9 +84,9 @@
                                             <label class="form-check-label" for="gender-other">Other</label>
                                         </div>
                                     </div>
-                                </div>
+                                </div>-->
                         
-                                <!-- Program Dropdown and Year Level Spinner -->
+                                <!-- Program Dropdown and Year Level Spinner 
                                 <div class="mb-3 row">
                                     <div class="input-group mb-3">
                                         <div class="input-group-prepend">
@@ -124,12 +115,7 @@
                         
                       </div>
                   </div>
-              </div>
-              
-              
-                
-                
-
+              </div>-->
             </div>
         </div>
     </div>
@@ -140,24 +126,16 @@
             <table class="table text-center mx-auto">
                 <thead>
                     <tr>
-                        <th>ID Number</th>
-                        <th>Name</th>
-                        <th>Gender</th>
-                        <th>Course</th>
-                        <th>Year</th>
-                        <th>Action</th>
+                        <th>College Name</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>2022-0380</td>
-                        <td>Febe Belvis</td>
-                        <td>Female</td>
-                        <td>BSCS</td>
-                        <td>3</td>
+                        <td>College of Computer Studies</td>
                         <td>
                             <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit">Edit</a>
-                            <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
+                            <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this College?')">Delete</a>
                         </td>
                     </tr>
                 </tbody>
