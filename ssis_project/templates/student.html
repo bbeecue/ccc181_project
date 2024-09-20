@@ -4,13 +4,13 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{ url_for('main.student_form') }}"">Students</a>
+            <a class="nav-link active" aria-current="page" href="{{ url_for('student.student_page') }}"">Students</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.college_form') }}">Colleges</a>
+            <a class="nav-link" href="#">Colleges</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.program_form') }}">Programs</a>
+            <a class="nav-link" href="#">Programs</a>
           </li>
         </ul>
         <button type="button" class="btn btn-outline-danger ms-auto">Log Out</button>
@@ -44,87 +44,73 @@
                   Add Student
               </button>
               
-              <div class="modal fade modal-lg" id="modal-add-student" tabindex="-1" aria-labelledby="modal-add-student-label" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="modal-add-student-label">Add Student</h1>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-              
-                          <div class="modal-body">
-                            <form action="{{ url_for('main.student_form') }}" method="POST"> <!--to pass data didto sa route-->
-                                
-                                <div class="mb-3 row">
-                                    <label for="student-id-year" class="form-label">ID Number</label>
-                                    <div class="col">
-                                        <input type="text" id="student-id-year" class="form-control" name="id_number_year" placeholder="Year (e.g., 2022)" pattern="\d{4}" required>
-                                    </div>
-                                    <span class="col-auto">-</span>
-                                    <div class="col">
-                                        <input type="text" id="student-id-unique" class="form-control" name="id_number_unique" placeholder="Unique Number (e.g., 0001)" pattern="\d{4}" required>
-                                    </div>
-                                </div>
-                        
-                                <!--student name-->
-                                <div class="mb-3">
-                                    <label for="first-name" class="form-label">First Name</label>
-                                    <input type="text" id="first-name" class="form-control" name="first_name" placeholder="Enter first name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="last-name" class="form-label">Last Name</label>
-                                    <input type="text" id="last-name" class="form-control" name="last_name" placeholder="Enter last name" required>
-                                </div>
-                        
-                                <!-- gender -->
-                                <div class="mb-3">
-                                    <label class="form-label">Gender</label>
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <div class="form-check me-3">
-                                            <input class="form-check-input" type="radio" name="gender" id="gender-female" value="female" required>
-                                            <label class="form-check-label" for="gender-female">Female</label>
+              <!-- Update modal form in student.html -->
+                <div class="modal fade modal-lg" id="modal-add-student" tabindex="-1" aria-labelledby="modal-add-student-label" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="modal-add-student-label">Add Student</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('student.add_student') }}" method="POST">
+                                    {{ form.hidden_tag() }}
+                                    
+                                    <div class="mb-3 row">
+                                        <label for="id_number_year" class="form-label">ID Number</label>
+                                        <div class="col">
+                                            {{ form.id_number_year(class="form-control", placeholder="Year (e.g., 2022)") }}
                                         </div>
-                                        <div class="form-check me-3">
-                                            <input class="form-check-input" type="radio" name="gender" id="gender-male" value="male" required>
-                                            <label class="form-check-label" for="gender-male">Male</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="gender" id="gender-other" value="other" required>
-                                            <label class="form-check-label" for="gender-other">Other</label>
+                                        <span class="col-auto">-</span>
+                                        <div class="col">
+                                            {{ form.id_number_unique(class="form-control", placeholder="Unique Number (e.g., 0001)") }}
                                         </div>
                                     </div>
-                                </div>
-                        
-                                <!-- program and year -->
-                                <div class="mb-3 row">
-                                    <div class="input-group mb-3">
-                                        <div class="input-group-prepend">
-                                            <label class="input-group-text" for="inputGroupSelect01">Program</label>
-                                        </div>
-                                        <select class="form-select" id="inputGroupSelect01" name="program" required>
-                                            <option value="" selected disabled>Choose...</option>
-                                            {% for program in programs %}
-                                                <option value="{{ program[0] }}">{{ program[1] }}</option>
+
+                                    <div class="mb-3">
+                                        {{ form.first_name.label }}
+                                        {{ form.first_name(class="form-control", placeholder="Enter first name") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form.last_name.label }}
+                                        {{ form.last_name(class="form-control", placeholder="Enter last name") }}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Gender</label>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            {% for choice in form.gender %}
+                                                <div class="form-check me-3">
+                                                    {{ choice() }}
+                                                    <label class="form-check-label">{{ choice.label }}</label>
+                                                </div>
                                             {% endfor %}
-                                        </select>
+                                        </div>
                                     </div>
-                        
-                                    <div class="col">
-                                        <label for="year-level" class="form-label">Year Level</label>
-                                        <input type="number" id="year-level" class="form-control" name="year_level" min="1" max="4" placeholder="Year Level (1-4)" required>
+
+                                    <div class="mb-3 row">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <label class="input-group-text">Program</label>
+                                            </div>
+                                            {{ form.program(class="form-select") }}
+                                        </div>
+                                        <div class="col">
+                                            {{ form.year_level.label }}
+                                            {{ form.year_level(class="form-control", placeholder="Year Level (1-4)", min=1, max=4) }}
+                                        </div>
                                     </div>
-                                </div>
-                        
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Add Student</button>
-                                </div>
-                            </form>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Add Student</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        
-                      </div>
-                  </div>
-              </div>
+                    </div>
+                </div>
+
               
               
                 
@@ -149,20 +135,23 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for student in students %}
                     <tr>
-                        <td>2022-0380</td>
-                        <td>Febe Belvis</td>
-                        <td>Female</td>
-                        <td>BSCS</td>
-                        <td>3</td>
+                        <td name="id_number">{{ student[0] }}</td>
+                        <td>{{ student[1] }} {{ student[2] }}</td>
+                        <td>{{ student[3] }}</td>
+                        <td>{{ student[4] }}</td>
+                        <td>{{ student[5] }}</td>
                         <td>
                             <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit">Edit</a>
-                            <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
+                            <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{student[0]}} student?')">Delete</a>
                         </td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    
 </div>
 {% endblock %}
