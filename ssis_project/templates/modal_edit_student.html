@@ -8,7 +8,9 @@
             <div class="modal-body">
                 <form action="{{ url_for('student.edit_student', id=student[0]) }}" method="POST">
                     {{ form.hidden_tag() }}
-                    <label for="id_number" class="form-label" id="student_id_label">Editing Student {{ student[0] }}</label>
+                    <label for="id_number" class="form-label">Editing Student: {{ student[0] }} </label>
+                    <input type="hidden" name="id_number_year" value="{{ form.id_number_year.data }}">
+                    <input type="hidden" name="id_number_unique" value="{{ form.id_number_unique.data }}">
                     <div class="mb-3">
                         {{ form.first_name.label }}
                         {{ form.first_name(class="form-control", value=student[1]) }}
@@ -22,7 +24,7 @@
                         <div class="d-flex justify-content-center align-items-center">
                             {% for choice in form.gender %}
                                 <div class="form-check me-3">
-                                    {{ choice(value=student[3]) }}
+                                    {{ choice() }}
                                     <label class="form-check-label">{{ choice.label }}</label>
                                 </div>
                             {% endfor %}
@@ -38,7 +40,7 @@
                         </div>
                         <div class="col">
                             {{ form.year_level.label }}
-                            {{ form.year_level(class="form-control", value=student[5], min=1, max=4) }}
+                            {{ form.year_level(class="form-control", value=student[5] ) }}
                         </div>
                     </div>
 

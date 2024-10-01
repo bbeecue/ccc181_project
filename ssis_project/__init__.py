@@ -6,8 +6,7 @@ from settings import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_SECRET_KEY
 
 
 def create_app():
-    app = Flask(__name__)
-    
+    app = Flask(__name__) 
     app.config['SECRET_KEY'] = DB_SECRET_KEY
     
     csrf = CSRFProtect(app)
@@ -18,7 +17,7 @@ def create_app():
         DB_PASSWORD=DB_PASSWORD,
         DB_NAME=DB_NAME,
     )
-
+    
     # establish database connection
     try:
         db = connect(

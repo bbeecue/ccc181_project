@@ -49,8 +49,7 @@
             </div>
         </div>
     </div>
-    
-    
+  
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <table class="table text-center mx-auto">
@@ -65,17 +64,25 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if form.id_number_unique.errors %}
+                      <div class="text-danger mb-3">
+                          {{ form.id_number_unique.errors[0] }}
+                      </div>
+                    {% endif %}
                     {% for student in students %}
                     <tr>
-                        <td name="id_number">{{ student[0] }}</td>
+                        <td>{{ student[0] }}</td>
                         <td>{{ student[1] }} {{ student[2] }}</td>
                         <td>{{ student[3] }}</td>
                         <td>{{ student[4] }}</td>
                         <td>{{ student[5] }}</td>
                         <td>
-                            <a href="#" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-student-{{ student[0] }}">Edit</a>
-                            <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{student[0]}} student?')">Delete</a>
-                        </td>
+                            <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-student-{{ student[0] }}">Edit</a>
+                            <!-- Delete Form -->
+                            <form action="{{ url_for('student.delete_student', id=student[0]) }}" method="POST" style="display:inline;">
+                              {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
+                              <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete student {{student[0]}}?')">Delete</button>
+                          </form>
                     </tr>
                     {% include 'modal_edit_student.html' %}
                     {% endfor %}
