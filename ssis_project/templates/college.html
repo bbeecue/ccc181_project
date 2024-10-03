@@ -4,13 +4,13 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.student_form') }}">Students</a>
+            <a class="nav-link" href="{{ url_for('student.student_page') }}">Students</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{ url_for('main.college_form') }}">Colleges</a>
+            <a class="nav-link active" aria-current="page" href="{{ url_for('college.college_page') }}">Colleges</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.program_form') }}">Programs</a>
+            <a class="nav-link" href="#">Programs</a>
           </li>
         </ul>
         <button type="button" class="btn btn-outline-danger ms-auto">Log Out</button>
@@ -23,99 +23,33 @@
         <div class="col-md-10 text-center mt-4">
             <h2 class="table-title mb-4">College List</h2>
             <div class="d-flex justify-content-between align-items-center">
-              
-                <form class="form-inline d-flex" role="search">
-                    <input class="form-control form-control-lg me-2" type="search" placeholder="Search" aria-label="Search" style="width: 300px;">
+
+                <form class="form-inline d-flex" role="search" method="GET" action="{{ url_for('college.college_page') }}">
+                    <div class="dropdown me-2">
+                        <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="searchButton">
+                            {% if request.args.get('search_by') %} 
+                                {{ request.args.get('search_by') }} 
+                            {% else %} 
+                                Search by...
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('College Code', this)">College Code</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('College Name', this)">College Name</a></li>
+                        </ul>
+                        <input type="hidden" name="search_by" id="search_by" value="{{ request.args.get('search_by', 'College Code') }}"> <!-- Default search_by value -->
+                    </div>
+                    <input class="form-control form-control-lg me-2" type="search" name="search" placeholder="Search" aria-label="Search" style="width: 300px;" value="{{ request.args.get('search', '') }}">
                     <button class="btn btn-secondary btn-lg" type="submit">Search</button>
                 </form>
                 
                 
                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modal-add-student">
                   Add College
-              </button>
-              
-              <!--
-              <div class="modal fade modal-lg" id="modal-add-student" tabindex="-1" aria-labelledby="modal-add-student-label" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="modal-add-student-label">Add College</h1>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-              
-                          <div class="modal-body">
-                            <form action="{{ url_for('main.college_form') }}" method="POST">
-                                 ID Number Fields (Year and Unique Number)
-                                <div class="mb-3 row">
-                                    <label for="student-id-year" class="form-label">ID Number</label>
-                                    <div class="col">
-                                        <input type="text" id="student-id-year" class="form-control" name="id_number_year" placeholder="Year (e.g., 2022)" pattern="\d{4}" required>
-                                    </div>
-                                    <span class="col-auto">-</span>
-                                    <div class="col">
-                                        <input type="text" id="student-id-unique" class="form-control" name="id_number_unique" placeholder="Unique Number (e.g., 0001)" pattern="\d{4}" required>
-                                    </div>
-                                </div> -->
-                        
-                                <!-- First Name and Last Name Fields 
-                                <div class="mb-3">
-                                    <label for="first-name" class="form-label">First Name</label>
-                                    <input type="text" id="first-name" class="form-control" name="first_name" placeholder="Enter first name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="last-name" class="form-label">Last Name</label>
-                                    <input type="text" id="last-name" class="form-control" name="last_name" placeholder="Enter last name" required>
-                                </div>-->
-                        
-                                <!-- Gender Radio Buttons 
-                                <div class="mb-3">
-                                    <label class="form-label">Gender</label>
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <div class="form-check me-3">
-                                            <input class="form-check-input" type="radio" name="gender" id="gender-female" value="female" required>
-                                            <label class="form-check-label" for="gender-female">Female</label>
-                                        </div>
-                                        <div class="form-check me-3">
-                                            <input class="form-check-input" type="radio" name="gender" id="gender-male" value="male" required>
-                                            <label class="form-check-label" for="gender-male">Male</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="gender" id="gender-other" value="other" required>
-                                            <label class="form-check-label" for="gender-other">Other</label>
-                                        </div>
-                                    </div>
-                                </div>-->
-                        
-                                <!-- Program Dropdown and Year Level Spinner 
-                                <div class="mb-3 row">
-                                    <div class="input-group mb-3">
-                                        <div class="input-group-prepend">
-                                            <label class="input-group-text" for="inputGroupSelect01">Program</label>
-                                        </div>
-                                        <select class="form-select" id="inputGroupSelect01" name="program" required>
-                                            <option value="" selected disabled>Choose...</option>
-                                            {% for program in programs %}
-                                                <option value="{{ program[0] }}">{{ program[1] }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                        
-                                    <div class="col">
-                                        <label for="year-level" class="form-label">Year Level</label>
-                                        <input type="number" id="year-level" class="form-control" name="year_level" min="1" max="4" placeholder="Year Level (1-4)" required>
-                                    </div>
-                                </div>
-                        
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Add Student</button>
-                                </div>
-                            </form>
-                        </div>
-                        
-                      </div>
-                  </div>
-              </div>-->
+                </button> 
+
+                <!--add college modal here-->
+                
             </div>
         </div>
     </div>
@@ -126,21 +60,47 @@
             <table class="table text-center mx-auto">
                 <thead>
                     <tr>
+                        <th>College Code</th>
                         <th>College Name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <tr>
-                        <td>College of Computer Studies</td>
-                        <td>
-                            <a href="" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit">Edit</a>
-                            <a href="" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this College?')">Delete</a>
-                        </td>
-                    </tr>
+                    <!--adtl. search functionality here-->
+                    {% if colleges|length == 0 %}
+                      <tr>
+                          <td colspan="6" class="text-center">College not found</td>
+                      </tr>
+                    {% else %}
+                        {% for college in colleges %}
+                        <tr>
+                            <td>{{ college[0] }}</td>
+                            <td>{{ college[1] }}</td>
+                            <td>
+                                <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#">Edit</a>
+                                <!-- Delete Form -->
+                                <form action="#" method="POST" style="display:inline;">
+                                  {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
+                                  <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{college[1]}}?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <!--add college edit modal here-->
+                        {% endfor %}
+                    {% endif %}
                 </tbody>
+
             </table>
         </div>
     </div>
 </div>
+
+<script>
+    function setSearchBy(value, element) {
+        document.getElementById('search_by').value = value;
+        document.getElementById('searchButton').textContent = value; // Update the button text
+    }
+</script>
+
 {% endblock %}
