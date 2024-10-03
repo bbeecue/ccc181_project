@@ -48,7 +48,7 @@
                   Add College
                 </button> 
 
-                <!--add college modal here-->
+                {% include 'modal_add_college.html' %}
                 
             </div>
         </div>
@@ -67,7 +67,16 @@
                 </thead>
 
                 <tbody>
-                    <!--adtl. search functionality here-->
+                    {% if form.college_code.errors %}
+                        <div class="text-danger mb-3">
+                        {{ form.college_code.errors[0] }}
+                        </div>
+                    {% endif %}
+                    {% if form.college_name.errors %}
+                        <div class="text-danger mb-3">
+                        {{ form.college_name.errors[0] }}
+                        </div>
+                    {% endif %}
                     {% if colleges|length == 0 %}
                       <tr>
                           <td colspan="6" class="text-center">College not found</td>
@@ -80,9 +89,9 @@
                             <td>
                                 <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#">Edit</a>
                                 <!-- Delete Form -->
-                                <form action="#" method="POST" style="display:inline;">
-                                  {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
-                                  <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{college[1]}}?')">Delete</button>
+                                <form action="{{ url_for('college.delete_college', code=college[0]) }}" method="POST" style="display:inline;">
+                                    {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
+                                    <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{college[1]}}?')">Delete</button>
                                 </form>
                             </td>
                         </tr>

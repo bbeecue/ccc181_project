@@ -35,6 +35,7 @@ def student_page():
         cursor.execute(sql)
 
     students = cursor.fetchall()
+    print(students)
     
     cursor.close()
 
@@ -54,9 +55,10 @@ def add_student():
     programs = cursor.fetchall()
     form.program.choices = [(program[0], program[1]) for program in programs]
 
-    # Fetch students to display in the table
+    # Fetch students
     cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level FROM student")
     students = cursor.fetchall()
+    
 
     if form.validate_on_submit():
         cursor = db.cursor()
@@ -67,12 +69,8 @@ def add_student():
         program = form.program.data
         year_level = form.year_level.data
 
-        try:
-            # Check if the student ID already exists
-            cursor.execute("SELECT id_number FROM student WHERE id_number = %s", (id_number,))
-            existing_student = cursor.fetchone()
-
-            if existing_student:
+        try:            
+            if existing_student(id_number):
                 # If the student ID already exists, show an error message and do not insert the new record
                 form.id_number_unique.errors.append("Student with this ID number already exists.")
                 return render_template('student.html', form=form, programs=programs, students=students)  # Include students here

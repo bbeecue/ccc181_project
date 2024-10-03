@@ -36,47 +36,33 @@ def college_page():
     return render_template('college.html', form=form, colleges=colleges)
 
 
-"""
-@student_bp.route('/add', methods=['GET', 'POST'])
-def add_student():
-    form = StudentForm()
+
+@college_bp.route('/add', methods=['GET', 'POST'])
+def add_college():
+    form = CollegeForm()
     db = current_app.config['db']
-
-    # Populate program choices dynamically
     cursor = db.cursor()
-    cursor.execute("SELECT code, name FROM program")
-    programs = cursor.fetchall()
-    form.program.choices = [(program[0], program[1]) for program in programs]
-
-    # Fetch students to display in the table
-    cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level FROM student")
-    students = cursor.fetchall()
-
+    
+    # Fetch colleges
+    cursor.execute("SELECT code, name FROM college")
+    colleges = cursor.fetchall()
     if form.validate_on_submit():
         cursor = db.cursor()
-        id_number = f"{form.id_number_year.data}-{form.id_number_unique.data}"
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        gender = form.gender.data
-        program = form.program.data
-        year_level = form.year_level.data
-
+        code = form.college_code.data
+        name = form.college_name.data
+        
         try:
-            # Check if the student ID already exists
-            cursor.execute("SELECT id_number FROM student WHERE id_number = %s", (id_number,))
-            existing_student = cursor.fetchone()
-
-            if existing_student:
+            if existing_college(code):
                 # If the student ID already exists, show an error message and do not insert the new record
-                form.id_number_unique.errors.append("Student with this ID number already exists.")
-                return render_template('student.html', form=form, programs=programs, students=students)  # Include students here
-
-            # Insert the new student if ID is unique
-            sql = " ""
-                INSERT INTO student (id_number, first_name, last_name, gender, program, year_level)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            " ""
-            cursor.execute(sql, (id_number, first_name, last_name, gender, program, year_level))
+                form.college_code.errors.append("College with this code already exists.")
+                return render_template('college.html', form=form, colleges=colleges)  
+            
+            # Insert the new college if code is unique
+            sql = """
+                INSERT INTO college (code, name)
+                VALUES (%s, %s)
+            """
+            cursor.execute(sql, (code, name))
             db.commit()
 
         except Exception as e:
@@ -85,12 +71,14 @@ def add_student():
         finally:
             cursor.close()
 
-        return redirect(url_for('student.student_page'))
+        return redirect(url_for('college.college_page'))
+    
+    print(form.errors)
 
-    return render_template('student.html', form=form, programs=programs, students=students)  # Ensure students are included here
+    return render_template('college.html', form=form, colleges=colleges)  
 
 
-
+"""
 @student_bp.route('/edit/<id>', methods=['GET', 'POST'])
 def edit_student(id):
     form = StudentForm()
@@ -136,38 +124,37 @@ def edit_student(id):
     print(form.errors)
 
     return render_template('student.html', form=form, programs=programs)
+"""
 
-
-@student_bp.route('/delete/<id>', methods=['POST'])
-def delete_student(id):
+@college_bp.route('/delete/<code>', methods=['POST'])
+def delete_college(code):
     db = current_app.config['db']
     cursor = db.cursor()
 
     try:
         # Delete the student with the given ID from the database
-        cursor.execute("DELETE FROM student WHERE id_number = %s", (id,))
+        cursor.execute("DELETE FROM college WHERE code = %s", (code,))
         db.commit()
     except Exception as e:
         db.rollback()
-        print(f"Error deleting student: {e}")
+        print(f"Error deleting college: {e}")
     finally:
         cursor.close()
 
     # Redirect back to the student page after deletion
-    return redirect(url_for('student.student_page'))
+    return redirect(url_for('college.college_page'))
 
 
 
-def existing_student(id_number):
-    " ""Check if a student with the given ID number already exists in the database." ""
+def existing_college(code):
+    """Check if college with the given code already exists in the database."""
     db = current_app.config['db']
     cursor = db.cursor()
     
-    cursor.execute("SELECT id_number FROM student WHERE id_number = %s", (id_number,))
-    student = cursor.fetchone()
+    cursor.execute("SELECT code FROM college WHERE code = %s", (code,))
+    college = cursor.fetchone()
     cursor.close()
     
-    if student:
-        return True  # Student already exists
+    if college:
+        return True  # college already exists
     return False  # No student found
-"""

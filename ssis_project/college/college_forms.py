@@ -8,5 +8,5 @@ class CollegeForm(FlaskForm):
             Regexp(r'^[A-Z]+$', message="College code must contain only capital letters.")])
     
     college_name = StringField('College Name', validators=[DataRequired(message="College name is required."),
-            Regexp(r'^[A-Za-z]+$', message="College name must contain only letters.")])
+            Regexp(r'^[A-Za-z\s]+$', message="College name must contain only letters.")])
     
