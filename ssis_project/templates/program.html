@@ -44,11 +44,11 @@
                 </form>
                 
                 
-                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#">
+                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modal-add-program">
                   Add Program
               </button>
 
-              <!--insert add program modal-->
+              {% include 'modal_add_program.html' %}
 
             </div>
         </div>
@@ -74,7 +74,7 @@
                                 <td>{{ program[1] }}</td>
                                 <td>{{ program[2] }}</td>
                                 <td>
-                                    <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#">Edit</a>
+                                    <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-program-{{ program[0] }}">Edit</a>
                                     <!-- Delete Form -->
                                     <form action="#" method="POST" style="display:inline;">
                                         {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
@@ -82,7 +82,9 @@
                                     </form>
                                 </td>
                             </tr>
-                            <!--insert edit modal here-->
+
+                            {% include 'modal_edit_program.html' %}
+
                         {% endfor %}
                     </tbody>
                 </table>
