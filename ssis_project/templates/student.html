@@ -7,7 +7,7 @@
             <a class="nav-link active" aria-current="page" href="{{ url_for('student.student_page') }}">Students</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Colleges</a>
+            <a class="nav-link" href="{{ url_for('college.college_page') }}">Colleges</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Programs</a>
@@ -20,9 +20,12 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row justify-content-center mb-4">
+      
         <div class="col-md-10 text-center mt-4">
+
             <h2 class="table-title mb-4">Student List</h2>
             <div class="d-flex justify-content-between align-items-center">
+
                 <form class="form-inline d-flex" role="search" method="GET" action="{{ url_for('student.student_page') }}">
                     <div class="dropdown me-2">
                         <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="searchButton">
@@ -62,7 +65,7 @@
                         <th>ID Number</th>
                         <th>Name</th>
                         <th>Gender</th>
-                        <th>Course</th>
+                        <th>Program</th>
                         <th>Year</th>
                         <th>Action</th>
                     </tr>
@@ -83,7 +86,11 @@
                           <td>{{ student[0] }}</td>
                           <td>{{ student[1] }} {{ student[2] }}</td>
                           <td>{{ student[3] }}</td>
-                          <td>{{ student[4] }}</td>
+                          {% if student[4] == None %}
+                            <td>Unenrolled</td>
+                          {% else %}
+                            <td>{{ student[4] }}</td>
+                          {% endif %}
                           <td>{{ student[5] }}</td>
                           <td>
                               <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-student-{{ student[0] }}">Edit</a>
