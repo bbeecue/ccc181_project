@@ -37,7 +37,12 @@ def create_app():
     from .student.student import student_bp
     app.register_blueprint(student_bp)
     
+    from .program.program import program_bp
+    app.register_blueprint(program_bp)
+    
     from .college.college import college_bp
     app.register_blueprint(college_bp)
+    
+    
 
     return app
