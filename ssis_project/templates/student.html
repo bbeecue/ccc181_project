@@ -4,7 +4,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{ url_for('student.student_page') }}"">Students</a>
+            <a class="nav-link active" aria-current="page" href="{{ url_for('student.student_page') }}">Students</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Colleges</a>
@@ -23,29 +23,33 @@
         <div class="col-md-10 text-center mt-4">
             <h2 class="table-title mb-4">Student List</h2>
             <div class="d-flex justify-content-between align-items-center">
-              
-                <form class="form-inline d-flex" role="search">
-                  <div class="dropdown me-2">
-                    <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Search by...
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">ID Number</a></li>
-                      <li><a class="dropdown-item" href="#">Name</a></li>
-                      <li><a class="dropdown-item" href="#">College</a></li>
-                    </ul>
-                  </div>
-                    <input class="form-control form-control-lg me-2" type="search" placeholder="Search" aria-label="Search" style="width: 300px;">
+                <form class="form-inline d-flex" role="search" method="GET" action="{{ url_for('student.student_page') }}">
+                    <div class="dropdown me-2">
+                        <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="searchButton">
+                            {% if request.args.get('search_by') %} 
+                                {{ request.args.get('search_by') }} 
+                            {% else %} 
+                                Search by...
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('ID Number', this)">ID Number</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('Name', this)">Name</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('Gender', this)">Gender</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('Program', this)">Program</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('Year Level', this)">Year Level</a></li>
+                        </ul>
+                        <input type="hidden" name="search_by" id="search_by" value="{{ request.args.get('search_by', 'ID Number') }}"> <!-- Default search_by value -->
+                    </div>
+                    <input class="form-control form-control-lg me-2" type="search" name="search" placeholder="Search" aria-label="Search" style="width: 300px;" value="{{ request.args.get('search', '') }}">
                     <button class="btn btn-secondary btn-lg" type="submit">Search</button>
                 </form>
                 
-                
                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modal-add-student">
-                  Add Student
-              </button>
-              
-             <!-- Include the Add Student modal -->
-             {% include 'modal_add_student.html' %}
+                    Add Student
+                </button>
+                <!-- Include the Add Student modal -->
+                {% include 'modal_add_student.html' %}
             </div>
         </div>
     </div>
@@ -64,32 +68,47 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% if form.id_number_unique.errors %}
-                      <div class="text-danger mb-3">
-                          {{ form.id_number_unique.errors[0] }}
-                      </div>
-                    {% endif %}
-                    {% for student in students %}
-                    <tr>
-                        <td>{{ student[0] }}</td>
-                        <td>{{ student[1] }} {{ student[2] }}</td>
-                        <td>{{ student[3] }}</td>
-                        <td>{{ student[4] }}</td>
-                        <td>{{ student[5] }}</td>
-                        <td>
-                            <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-student-{{ student[0] }}">Edit</a>
-                            <!-- Delete Form -->
-                            <form action="{{ url_for('student.delete_student', id=student[0]) }}" method="POST" style="display:inline;">
-                              {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
-                              <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete student {{student[0]}}?')">Delete</button>
-                          </form>
-                    </tr>
-                    {% include 'modal_edit_student.html' %}
-                    {% endfor %}
-                </tbody>
+                  {% if form.id_number_unique.errors %}
+                    <div class="text-danger mb-3">
+                        {{ form.id_number_unique.errors[0] }}
+                    </div>
+                  {% endif %}
+                  {% if students|length == 0 %}
+                      <tr>
+                          <td colspan="6" class="text-center">Student not found</td>
+                      </tr>
+                  {% else %}
+                      {% for student in students %}
+                      <tr>
+                          <td>{{ student[0] }}</td>
+                          <td>{{ student[1] }} {{ student[2] }}</td>
+                          <td>{{ student[3] }}</td>
+                          <td>{{ student[4] }}</td>
+                          <td>{{ student[5] }}</td>
+                          <td>
+                              <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-student-{{ student[0] }}">Edit</a>
+                              <!-- Delete Form -->
+                              <form action="{{ url_for('student.delete_student', id=student[0]) }}" method="POST" style="display:inline;">
+                                {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
+                                <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete student {{student[0]}}?')">Delete</button>
+                              </form>
+                          </td>
+                      </tr>
+                      {% include 'modal_edit_student.html' %}
+                      {% endfor %}
+                  {% endif %}
+              </tbody>
+              
             </table>
         </div>
     </div>
-    
 </div>
+
+<script>
+  function setSearchBy(value, element) {
+      document.getElementById('search_by').value = value;
+      document.getElementById('searchButton').textContent = value; // Update the button text
+  }
+</script>
+
 {% endblock %}

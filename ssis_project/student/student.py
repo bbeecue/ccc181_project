@@ -1,17 +1,39 @@
-# student.py
+# routes and functions
 from flask import Blueprint, render_template, current_app, request, redirect, url_for
 from .student_forms import StudentForm  
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
 
-@student_bp.route('/')
+@student_bp.route('/', methods=['GET', 'POST'])
 def student_page():
     db = current_app.config['db']
     cursor = db.cursor()
+    
+    search_query = request.args.get('search', '')
+    search_by = request.args.get('search_by', 'ID Number')  # Default to 'ID Number'
+    
     cursor.execute("SELECT code, name FROM program")
     programs = cursor.fetchall()
     
-    cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level FROM student")
+    sql = "SELECT id_number, first_name, last_name, gender, program, year_level FROM student"
+    
+    if search_query:
+        if search_by == "ID Number":
+            sql += " WHERE id_number LIKE %s"
+        elif search_by == "Name":
+            sql += " WHERE CONCAT(first_name, ' ', last_name) LIKE %s"
+        elif search_by == "Gender":
+            sql += " WHERE gender LIKE %s"
+        elif search_by == "Program":
+            sql += " WHERE program LIKE %s"
+        elif search_by == "Year Level":
+            sql += " WHERE year_level LIKE %s"
+        
+        search_pattern = f"%{search_query}%"
+        cursor.execute(sql, (search_pattern,))
+    else:
+        cursor.execute(sql)
+
     students = cursor.fetchall()
     
     cursor.close()
@@ -52,7 +74,7 @@ def add_student():
 
             if existing_student:
                 # If the student ID already exists, show an error message and do not insert the new record
-                form.id_number_unique.errors.append("This ID number already exists. Please use a different one.")
+                form.id_number_unique.errors.append("Student with this ID number already exists.")
                 return render_template('student.html', form=form, programs=programs, students=students)  # Include students here
 
             # Insert the new student if ID is unique
@@ -79,20 +101,26 @@ def add_student():
 def edit_student(id):
     form = StudentForm()
     db = current_app.config['db']
-
-    # Prepopulate the form with the student's current data
+    cursor = db.cursor()
+    
+    # Fetch current student details to prepopulate the form
+    cursor.execute("SELECT * FROM student WHERE id_number=%s", (id,))
+    student_data = cursor.fetchone()
+    form.id_number_year.data, form.id_number_unique.data = student_data[0].split('-')
+    cursor.close()
+    
+    cursor = db.cursor()
+    cursor.execute("SELECT code, name FROM program")
+    programs = cursor.fetchall()
+    form.program.choices = [(program[0], program[1]) for program in programs]
+    
     if request.method == 'GET':  # Only populate on GET requests
-        form.id_number_year.data, form.id_number_unique.data = student_data[0].split('-')
         form.first_name.data = student_data[1]
         form.last_name.data = student_data[2]
         form.gender.data = student_data[3]
         form.program.data = student_data[4]
         form.year_level.data = student_data[5]
-        
-    cursor = db.cursor()
-    cursor.execute("SELECT code, name FROM program")
-    programs = cursor.fetchall()
-    form.program.choices = [(program[0], program[1]) for program in programs]
+
 
     if form.validate_on_submit():
         id_number = id 
@@ -112,14 +140,10 @@ def edit_student(id):
         return redirect(url_for('student.student_page'))
     
     print(form.errors)
-    
-    # Fetch current student details to prepopulate the form
-    cursor.execute("SELECT * FROM student WHERE id_number=%s", (id,))
-    student_data = cursor.fetchone()
-    print(student_data)
-    cursor.close()
 
     return render_template('student.html', form=form, programs=programs)
+
+
 @student_bp.route('/delete/<id>', methods=['POST'])
 def delete_student(id):
     db = current_app.config['db']
