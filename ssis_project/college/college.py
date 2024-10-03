@@ -78,53 +78,57 @@ def add_college():
     return render_template('college.html', form=form, colleges=colleges)  
 
 
-"""
-@student_bp.route('/edit/<id>', methods=['GET', 'POST'])
-def edit_student(id):
-    form = StudentForm()
+@college_bp.route('/edit/<code>', methods=['GET', 'POST'])
+def edit_college(code):
+    form = CollegeForm()
     db = current_app.config['db']
     cursor = db.cursor()
+    college_code = code
     
-    # Fetch current student details to prepopulate the form
-    cursor.execute("SELECT * FROM student WHERE id_number=%s", (id,))
-    student_data = cursor.fetchone()
-    form.id_number_year.data, form.id_number_unique.data = student_data[0].split('-')
+    # Fetch current college details to prepopulate the form
+    cursor.execute("SELECT * FROM college WHERE code=%s", (code,))
+    college_data = cursor.fetchone()
+    
+    
+    # Fetch colleges
+    cursor.execute("SELECT code, name FROM college")
+    colleges = cursor.fetchall()
     cursor.close()
     
-    cursor = db.cursor()
-    cursor.execute("SELECT code, name FROM program")
-    programs = cursor.fetchall()
-    form.program.choices = [(program[0], program[1]) for program in programs]
     
     if request.method == 'GET':  # Only populate on GET requests
-        form.first_name.data = student_data[1]
-        form.last_name.data = student_data[2]
-        form.gender.data = student_data[3]
-        form.program.data = student_data[4]
-        form.year_level.data = student_data[5]
-
-
-    if form.validate_on_submit():
-        id_number = id 
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        gender = form.gender.data
-        program = form.program.data
-        year_level = form.year_level.data
-        
-        
-        cursor.execute(" ""
-                UPDATE student SET first_name=%s, last_name=%s, gender=%s, program=%s, year_level=%s WHERE id_number=%s
-            " "", (first_name, last_name, gender, program, year_level, id_number))
-        db.commit()
-        cursor.close()
-            
-        return redirect(url_for('student.student_page'))
+        form.college_code.data = college_data[1]
+        form.college_name.data = college_data[2]
     
-    print(form.errors)
+    if form.validate_on_submit():
+        new_college_code = form.college_code.data 
+        college_name = form.college_name.data
+        
+        if new_college_code == college_code:
+            cursor = db.cursor()
+            cursor.execute("""
+                UPDATE college SET name=%s WHERE code=%s
+            """, (college_name, college_code))
+            db.commit()
+            cursor.close()
+            
+        elif existing_college(new_college_code):
+            form.college_code.errors.append("College with this code already exists.")
+            return render_template('college.html', form=form, colleges=colleges)
+        
+        else:
+            cursor = db.cursor()
+            cursor.execute("""
+                UPDATE college SET code=%s, name=%s WHERE code=%s
+            """, (new_college_code, college_name, college_code))
+            db.commit()
+            cursor.close()
+            
+        return redirect(url_for('college.college_page'))
+    
 
-    return render_template('student.html', form=form, programs=programs)
-"""
+    return render_template('college.html', form=form, colleges=colleges)
+
 
 @college_bp.route('/delete/<code>', methods=['POST'])
 def delete_college(code):

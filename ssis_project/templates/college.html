@@ -6,11 +6,11 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('student.student_page') }}">Students</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{{ url_for('college.college_page') }}">Colleges</a>
+          <li class="nav-item"></li>
+            <a class="nav-link" href="#">Programs</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Programs</a>
+            <a class="nav-link active" aria-current="page" href="{{ url_for('college.college_page') }}">Colleges</a>
           </li>
         </ul>
         <button type="button" class="btn btn-outline-danger ms-auto">Log Out</button>
@@ -87,7 +87,7 @@
                             <td>{{ college[0] }}</td>
                             <td>{{ college[1] }}</td>
                             <td>
-                                <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#">Edit</a>
+                                <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-college-{{ college[0] }}">Edit</a>
                                 <!-- Delete Form -->
                                 <form action="{{ url_for('college.delete_college', code=college[0]) }}" method="POST" style="display:inline;">
                                     {{ form.hidden_tag() }} <!-- CSRF Token for protection -->
@@ -95,7 +95,7 @@
                                 </form>
                             </td>
                         </tr>
-                        <!--add college edit modal here-->
+                        {% include 'modal_edit_college.html' %}
                         {% endfor %}
                     {% endif %}
                 </tbody>
