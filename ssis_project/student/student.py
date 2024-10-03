@@ -35,7 +35,6 @@ def student_page():
         cursor.execute(sql)
 
     students = cursor.fetchall()
-    print(students)
     
     cursor.close()
 
@@ -100,25 +99,27 @@ def edit_student(id):
     form = StudentForm()
     db = current_app.config['db']
     cursor = db.cursor()
-    
+
     # Fetch current student details to prepopulate the form
     cursor.execute("SELECT * FROM student WHERE id_number=%s", (id,))
     student_data = cursor.fetchone()
     form.id_number_year.data, form.id_number_unique.data = student_data[0].split('-')
     cursor.close()
-    
+
     cursor = db.cursor()
     cursor.execute("SELECT code, name FROM program")
     programs = cursor.fetchall()
     form.program.choices = [(program[0], program[1]) for program in programs]
-    
+
+    # Find the corresponding program code for the current student and set it as the selected value
+    current_program_code = student_data[4]
+    form.program.data = current_program_code  # Set the program data to the code, not the name
+
     if request.method == 'GET':  # Only populate on GET requests
         form.first_name.data = student_data[1]
         form.last_name.data = student_data[2]
         form.gender.data = student_data[3]
-        form.program.data = student_data[4]
         form.year_level.data = student_data[5]
-
 
     if form.validate_on_submit():
         id_number = id 
@@ -127,19 +128,19 @@ def edit_student(id):
         gender = form.gender.data
         program = form.program.data
         year_level = form.year_level.data
-        
-        
+
         cursor.execute("""
                 UPDATE student SET first_name=%s, last_name=%s, gender=%s, program=%s, year_level=%s WHERE id_number=%s
             """, (first_name, last_name, gender, program, year_level, id_number))
         db.commit()
         cursor.close()
-            
+
         return redirect(url_for('student.student_page'))
-    
+
     print(form.errors)
 
     return render_template('student.html', form=form, programs=programs)
+
 
 
 @student_bp.route('/delete/<id>', methods=['POST'])

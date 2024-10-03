@@ -36,8 +36,15 @@
                             <div class="input-group-prepend">
                                 <label class="input-group-text">Program</label>
                             </div>
-                            {{ form.program(class="form-select") }}
+                            <select class="form-control" name="program">
+                                {% for code, name in form.program.choices %}
+                                    <option value="{{ code }}" {% if form.program.data == code %}selected{% endif %}>
+                                        {{ name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
+                        
                         <div class="col">
                             {{ form.year_level.label }}
                             {{ form.year_level(class="form-control", value=student[5] ) }}

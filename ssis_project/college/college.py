@@ -97,8 +97,8 @@ def edit_college(code):
     
     
     if request.method == 'GET':  # Only populate on GET requests
-        form.college_code.data = college_data[1]
-        form.college_name.data = college_data[2]
+        form.college_code.data = college_data[0]
+        form.college_name.data = college_data[1]
     
     if form.validate_on_submit():
         new_college_code = form.college_code.data 
