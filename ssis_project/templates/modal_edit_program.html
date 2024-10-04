@@ -21,7 +21,14 @@
                         <div class="input-group-prepend">
                             <label class="input-group-text">College</label>
                         </div>
-                        {{ form.college_code(class="form-select") }}
+                        <select class="form-control" name="college_code">
+                            {% for code, name in form.college_code.choices %}
+                                <option value="{{ code }}" 
+                                    {% if program[2] == code %}selected{% endif %}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
 
                     <div class="modal-footer">

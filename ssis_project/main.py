@@ -3,16 +3,6 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def main():
-    return render_template("base.html")
+    return redirect(url_for('student.student_page'))
 
-"""
 
-@main_bp.route('/college')
-def college_form():
-    return render_template("college.html")
-
-@main_bp.route('/program')
-def program_form():
-    return render_template("program.html")
-    
-"""

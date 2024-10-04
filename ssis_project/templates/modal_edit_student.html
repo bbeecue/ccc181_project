@@ -36,9 +36,12 @@
                             <div class="input-group-prepend">
                                 <label class="input-group-text">Program</label>
                             </div>
+                        
                             <select class="form-control" name="program">
+                                <option value="" {% if student[4] is none %}selected{% endif %}>Unenrolled</option>
                                 {% for code, name in form.program.choices %}
-                                    <option value="{{ code }}" {% if form.program.data == code %}selected{% endif %}>
+                                    <option value="{{ code }}" 
+                                        {% if student[4] == code %}selected{% endif %}>
                                         {{ name }}
                                     </option>
                                 {% endfor %}

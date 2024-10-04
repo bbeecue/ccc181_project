@@ -23,13 +23,13 @@ def student_page():
         elif search_by == "Name":
             sql += " WHERE CONCAT(first_name, ' ', last_name) LIKE %s"
         elif search_by == "Gender":
-            sql += " WHERE gender LIKE %s"
+            sql += " WHERE LOWER(gender) = LOWER(%s)"
         elif search_by == "Program":
             sql += " WHERE program LIKE %s"
         elif search_by == "Year Level":
             sql += " WHERE year_level LIKE %s"
         
-        search_pattern = f"%{search_query}%"
+        search_pattern = f"%{search_query}%" if search_by != "Gender" else search_query  # Adjust pattern for Gender
         cursor.execute(sql, (search_pattern,))
     else:
         cursor.execute(sql)
@@ -110,15 +110,14 @@ def edit_student(id):
     cursor.execute("SELECT code, name FROM program")
     programs = cursor.fetchall()
     form.program.choices = [(program[0], program[1]) for program in programs]
-
-    # Find the corresponding program code for the current student and set it as the selected value
     current_program_code = student_data[4]
-    form.program.data = current_program_code  # Set the program data to the code, not the name
+      
 
-    if request.method == 'GET':  # Only populate on GET requests
+    if request.method == 'GET':  
         form.first_name.data = student_data[1]
         form.last_name.data = student_data[2]
         form.gender.data = student_data[3]
+        form.program.data = current_program_code
         form.year_level.data = student_data[5]
 
     if form.validate_on_submit():
@@ -149,7 +148,7 @@ def delete_student(id):
     cursor = db.cursor()
 
     try:
-        # Delete the student with the given ID from the database
+        
         cursor.execute("DELETE FROM student WHERE id_number = %s", (id,))
         db.commit()
     except Exception as e:
@@ -158,7 +157,7 @@ def delete_student(id):
     finally:
         cursor.close()
 
-    # Redirect back to the student page after deletion
+
     return redirect(url_for('student.student_page'))
 
 
@@ -173,5 +172,5 @@ def existing_student(id_number):
     cursor.close()
     
     if student:
-        return True  # Student already exists
-    return False  # No student found
+        return True  
+    return False  

@@ -109,7 +109,8 @@ def edit_program(program_code):
     # Fetch colleges
     cursor.execute("SELECT code, name FROM college")
     colleges = cursor.fetchall()
-    form.college_code.choices = [(college[0], college[1]) for college in colleges]  # Set choices as (college_code, college_name)
+    form.college_code.choices = [(college[0], college[1]) for college in colleges]
+    current_college_code = program_data[2]# Set choices as (college_code, college_name)
     
     cursor.close()
     
@@ -117,7 +118,7 @@ def edit_program(program_code):
     if request.method == 'GET':
         form.program_code.data = program_data[0]
         form.program_name.data = program_data[1]
-        form.college_code.data = program_data[2]  # Set the current college_code to prepopulate the dropdown
+        form.college_code.data = current_college_code
     
     if form.validate_on_submit():
         new_program_code = form.program_code.data 
@@ -138,12 +139,11 @@ def edit_program(program_code):
 
 
 @program_bp.route('/delete/<program_code>', methods=['POST'])
-def delete_college(program_code):
+def delete_program(program_code):
     db = current_app.config['db']
     cursor = db.cursor()
 
     try:
-        # Delete the student with the given ID from the database
         cursor.execute("DELETE FROM program WHERE code = %s", (program_code,))
         db.commit()
     except Exception as e:
@@ -166,5 +166,5 @@ def existing_program(program_code):
     cursor.close()
     
     if program:
-        return True  # college already exists
-    return False  # No student found
+        return True 
+    return False  

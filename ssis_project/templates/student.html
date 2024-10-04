@@ -39,7 +39,7 @@
                             <li><a class="dropdown-item" href="#" onclick="setSearchBy('ID Number', this)">ID Number</a></li>
                             <li><a class="dropdown-item" href="#" onclick="setSearchBy('Name', this)">Name</a></li>
                             <li><a class="dropdown-item" href="#" onclick="setSearchBy('Gender', this)">Gender</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('Program', this)">Program</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setSearchBy('Program', this)">Program Code</a></li>
                             <li><a class="dropdown-item" href="#" onclick="setSearchBy('Year Level', this)">Year Level</a></li>
                         </ul>
                         <input type="hidden" name="search_by" id="search_by" value="{{ request.args.get('search_by', 'ID Number') }}"> <!-- Default search_by value -->
@@ -75,6 +75,21 @@
                     <div class="text-danger mb-3">
                         {{ form.id_number_unique.errors[0] }}
                     </div>
+                  {% endif %}
+                  {% if form.id_number_year.errors %}
+                    <div class="text-danger mb-3">
+                        {{ form.id_number_year.errors[0] }}
+                    </div>
+                  {% endif %}
+                  {% if form.first_name.errors %}
+                  <div class="text-danger mb-3">
+                      {{ form.first_name.errors[0] }}
+                  </div>
+                  {% endif %}
+                  {% if form.last_name.errors %}
+                  <div class="text-danger mb-3">
+                      {{ form.last_name.errors[0] }}
+                  </div>
                   {% endif %}
                   {% if students|length == 0 %}
                       <tr>
