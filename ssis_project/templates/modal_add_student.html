@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ url_for('student.add_student') }}" method="POST">
+                <form action="{{ url_for('student.add_student') }}" enctype="multipart/form-data" method="POST">
                     {{ form.hidden_tag() }}
                     <div class="mb-3 row">
                         <label for="id_number_year" class="form-label">ID Number</label>
@@ -18,7 +18,7 @@
                             {{ form.id_number_unique(class="form-control", placeholder="Unique Number (e.g., 0001)") }}
                         </div>
                     </div>
-                    
+                
 
                     <div class="mb-3">
                         {{ form.first_name.label }}
@@ -51,6 +51,10 @@
                             {{ form.year_level.label }}
                             {{ form.year_level(class="form-control", placeholder="Year Level (1-4)", min=1, max=4) }}
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.student_image.label }} {{ form.student_image(class="form-control") }}
                     </div>
 
                     <div class="modal-footer">

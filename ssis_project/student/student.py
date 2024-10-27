@@ -1,6 +1,9 @@
 # routes and functions
+import cloudinary
 from flask import Blueprint, render_template, current_app, request, redirect, url_for
 from .student_forms import StudentForm  
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
 
@@ -15,7 +18,7 @@ def student_page():
     cursor.execute("SELECT code, name FROM program")
     programs = cursor.fetchall()
     
-    sql = "SELECT id_number, first_name, last_name, gender, program, year_level FROM student"
+    sql = "SELECT id_number, first_name, last_name, gender, program, year_level, image_url FROM student"
     
     if search_query:
         if search_by == "ID Number":
@@ -55,19 +58,35 @@ def add_student():
     form.program.choices = [(program[0], program[1]) for program in programs]
 
     # Fetch students
-    cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level FROM student")
+    cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level, image_url FROM student")
     students = cursor.fetchall()
+    print(students)
     
 
     if form.validate_on_submit():
         cursor = db.cursor()
+        image_file = request.files.get('student_image')  # Use request.files
+        image_url = None
+
+        if image_file and image_file.filename != '':
+            try:
+                # Upload image to Cloudinary
+                upload_result = upload(image_file)
+                image_url = upload_result.get('secure_url')
+            except Exception as e:
+                form.student_image.errors.append(f"Failed to upload image: {e}")
+                print(f"Upload error: {e}")
+        else:
+            print("No file uploaded or file name is empty.")
+        
         id_number = f"{form.id_number_year.data}-{form.id_number_unique.data}"
         first_name = form.first_name.data
         last_name = form.last_name.data
         gender = form.gender.data
         program = form.program.data
         year_level = form.year_level.data
-
+        print(f"Image: {image_url}")
+        
         try:            
             if existing_student(id_number):
                 # If the student ID already exists, show an error message and do not insert the new record
@@ -76,10 +95,10 @@ def add_student():
 
             # Insert the new student if ID is unique
             sql = """
-                INSERT INTO student (id_number, first_name, last_name, gender, program, year_level)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO student (id_number, first_name, last_name, gender, program, year_level, image_url)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(sql, (id_number, first_name, last_name, gender, program, year_level))
+            cursor.execute(sql, (id_number, first_name, last_name, gender, program, year_level, image_url))
             db.commit()
 
         except Exception as e:
@@ -87,8 +106,12 @@ def add_student():
             print(f"Error: {e}")
         finally:
             cursor.close()
+        
+        
 
         return redirect(url_for('student.student_page'))
+
+    print(form.errors)
 
     return render_template('student.html', form=form, programs=programs, students=students)  # Ensure students are included here
 

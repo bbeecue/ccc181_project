@@ -1,9 +1,16 @@
 # __init__.py
+import os
+import cloudinary
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from mysql.connector import connect, Error
 from settings import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_SECRET_KEY
 
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+)
 
 def create_app():
     app = Flask(__name__) 
@@ -17,6 +24,10 @@ def create_app():
         DB_PASSWORD=DB_PASSWORD,
         DB_NAME=DB_NAME,
     )
+    
+    
+    import cloudinary.uploader
+    import cloudinary.api
     
     # establish database connection
     try:

@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, RadioField, SelectField, SubmitField
+from flask_wtf.file import FileRequired, FileAllowed
+from wtforms import StringField, IntegerField, RadioField, SelectField, SubmitField, FileField
 from wtforms.validators import DataRequired, Length, NumberRange, Regexp
+
 
 class StudentForm(FlaskForm):
     
@@ -16,3 +18,6 @@ class StudentForm(FlaskForm):
     program = SelectField('Program', choices=[], validators=[DataRequired()])
     year_level = IntegerField('Year Level', validators=[DataRequired(), NumberRange(min=1, max=4)])
     submit = SubmitField('Submit')
+    student_image = FileField('Upload Image:', validators=[FileRequired(),
+                                                          FileAllowed(['jpg', 'jpeg', 'png', 'webp'], "This file has an invalid image format.",)
+                                                          ])
