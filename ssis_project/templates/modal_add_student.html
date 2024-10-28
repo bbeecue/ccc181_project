@@ -8,6 +8,19 @@
             <div class="modal-body">
                 <form action="{{ url_for('student.add_student') }}" enctype="multipart/form-data" method="POST">
                     {{ form.hidden_tag() }}
+
+                    <div class="mb-3 text-center">
+                        <!-- Image Preview with circular crop -->
+                        <img id="image-new-preview" src="#" alt="Image Preview" 
+                             class="img-thumbnail rounded-circle" 
+                             style="display:none; width: 170px; height: 170px; object-fit: cover;">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="student_image" class="form-label">Upload Student Image</label>
+                        {{ form.student_image(class="form-control", id="student_image", onchange="previewNewImage(event)") }}
+                    </div>
+
                     <div class="mb-3 row">
                         <label for="id_number_year" class="form-label">ID Number</label>
                         <div class="col">
@@ -53,9 +66,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        {{ form.student_image.label }} {{ form.student_image(class="form-control") }}
-                    </div>
+                    
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -66,3 +77,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    function previewNewImage(event) {
+        const reader = new FileReader();
+        const imagePreview = document.getElementById('image-new-preview');
+
+        reader.onload = function () {
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'inline-flex';
+        };
+
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>

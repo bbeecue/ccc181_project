@@ -142,9 +142,25 @@ def edit_student(id):
         form.gender.data = student_data[3]
         form.program.data = current_program_code
         form.year_level.data = student_data[5]
+        form.student_image.data = student_data[6]
 
     if form.validate_on_submit():
         id_number = id 
+        image_file = request.files.get('student_image')  # Use request.files
+        image_url = None
+
+        
+        if image_file and image_file.filename != '':
+            try:
+                # Upload image to Cloudinary
+                upload_result = upload(image_file)
+                image_url = upload_result.get('secure_url')
+            except Exception as e:
+                form.student_image.errors.append(f"Failed to upload image: {e}")
+                print(f"Upload error: {e}")
+        else:
+            image_url = form.student_image.data
+        
         first_name = form.first_name.data
         last_name = form.last_name.data
         gender = form.gender.data
@@ -152,8 +168,8 @@ def edit_student(id):
         year_level = form.year_level.data
 
         cursor.execute("""
-                UPDATE student SET first_name=%s, last_name=%s, gender=%s, program=%s, year_level=%s WHERE id_number=%s
-            """, (first_name, last_name, gender, program, year_level, id_number))
+                UPDATE student SET first_name=%s, last_name=%s, gender=%s, program=%s, year_level=%s, image_url=%s WHERE id_number=%s
+            """, (first_name, last_name, gender, program, year_level, image_url, id_number))
         db.commit()
         cursor.close()
 
