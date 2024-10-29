@@ -6,31 +6,30 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ url_for('student.edit_student', id=student[0]) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url_for('student.edit_student', id=student[0]) }}" enctype="multipart/form-data" method="POST">
                     {{ form.hidden_tag() }}
                     <label for="id_number" class="form-label">Editing Student: {{ student[0] }} </label>
                     <input type="hidden" name="id_number_year" value="{{ form.id_number_year.data }}">
                     <input type="hidden" name="id_number_unique" value="{{ form.id_number_unique.data }}">
 
+                   
                     <div class="mb-3 text-center">
-                        <!-- Conditional Rendering for Image Preview -->
-                        {% if student[6] %}
-                            <img id="image-edit-preview" 
-                                 src="{{ student[6] }}" 
-                                 class="img-thumbnail rounded-circle"
-                                 style="display: inline-flex; width: 170px; height: 170px; object-fit: cover;">
-                        {% else %}
-                            <img id="image-edit-preview" 
-                                 src="" 
-                                 class="img-thumbnail rounded-circle"
-                                 style="display: none; width: 170px; height: 170px; object-fit: cover;">
-                        {% endif %}
+                        <img id="image-preview-{{ student[0] }}" 
+                             src="{{ student[6] or 'https://res.cloudinary.com/dilqmvkog/image/upload/v1730199399/dowuupdz7jzgzsrv514j.png' }}" 
+                             alt="Image Preview" 
+                             class="img-thumbnail rounded-circle" 
+                             style="width: 170px; height: 170px; object-fit: cover;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="student_image_{{ student[0] }}" class="form-label">Upload New Student Image</label>
+                        <input type="file" name="student_image" 
+                               id="student_image_{{ student[0] }}" 
+                               class="form-control" 
+                               onchange="previewImage(event)">
                     </div>
 
-                    <div class="mb-3">
-                        <label for="student_image" class="form-label">Upload New Student Image</label>
-                        {{ form.student_image(class="form-control", id="student_image", onchange="previewEditImage(event)") }}
-                    </div>
+                    
 
                     <div class="mb-3">
                         {{ form.first_name.label }}
@@ -57,24 +56,32 @@
                             <div class="input-group-prepend">
                                 <label class="input-group-text">Program</label>
                             </div>
+                        
                             <select class="form-control" name="program">
                                 <option value="" {% if student[4] is none %}selected{% endif %}>Unenrolled</option>
                                 {% for code, name in form.program.choices %}
                                     <option value="{{ code }}" 
-                                            {% if student[4] == code %}selected{% endif %}>
+                                        {% if student[4] == code %}selected{% endif %}>
                                         {{ name }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
+                        
                         <div class="col">
                             {{ form.year_level.label }}
-                            {{ form.year_level(class="form-control", value=student[5]) }}
+                            {{ form.year_level(class="form-control", value=student[5] ) }}
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        {% if student[6] %}
+                        <button type="button" class="btn btn-danger" 
+                                onclick="deleteImage('{{ student[0] }}')">
+                            Delete Image
+                        </button>
+                        {% endif %}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearImageForm(event)">Close</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
@@ -84,26 +91,20 @@
 </div>
 
 <script>
-    function previewEditImage(event) {
-        const imagePreview = document.getElementById('image-edit-preview');
-        const file = event.target.files[0];
+function previewImage(event) {
+    const input = event.target;
+    const modal = input.closest('.modal'); 
+    const preview = modal.querySelector('img[id^="image-preview-"]'); 
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        preview.src = e.target.result;
+    };
 
-        // Check if a file was selected
-        if (file) {
-            const reader = new FileReader();
-
-            // When the file is read, update the image source
-            reader.onload = function (e) {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'inline-flex';  // Ensure visibility
-            };
-
-            reader.readAsDataURL(file);
-        } else {
-            // Hide the image preview if no file is selected
-            imagePreview.src = '';
-            imagePreview.style.display = 'none';
-        }
+    if (input.files && input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
     }
+}
+
 </script>
+
 

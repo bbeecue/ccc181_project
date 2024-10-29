@@ -2,7 +2,7 @@
 import cloudinary
 from flask import Blueprint, render_template, current_app, request, redirect, url_for
 from .student_forms import StudentForm  
-from cloudinary.uploader import upload
+from cloudinary.uploader import upload, destroy
 from cloudinary.utils import cloudinary_url
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
@@ -60,7 +60,7 @@ def add_student():
     # Fetch students
     cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level, image_url FROM student")
     students = cursor.fetchall()
-    print(students)
+    
     
 
     if form.validate_on_submit():
@@ -85,7 +85,7 @@ def add_student():
         gender = form.gender.data
         program = form.program.data
         year_level = form.year_level.data
-        print(f"Image: {image_url}")
+        
         
         try:            
             if existing_student(id_number):
@@ -128,6 +128,8 @@ def edit_student(id):
     student_data = cursor.fetchone()
     form.id_number_year.data, form.id_number_unique.data = student_data[0].split('-')
     cursor.close()
+    
+    
 
     cursor = db.cursor()
     cursor.execute("SELECT code, name FROM program")
@@ -142,14 +144,15 @@ def edit_student(id):
         form.gender.data = student_data[3]
         form.program.data = current_program_code
         form.year_level.data = student_data[5]
-        form.student_image.data = student_data[6]
+        
 
     if form.validate_on_submit():
         id_number = id 
-        image_file = request.files.get('student_image')  # Use request.files
-        image_url = None
-
         
+        image_file = request.files.get('student_image') 
+        image_url = None
+        
+        print(image_file)
         if image_file and image_file.filename != '':
             try:
                 # Upload image to Cloudinary
@@ -159,7 +162,10 @@ def edit_student(id):
                 form.student_image.errors.append(f"Failed to upload image: {e}")
                 print(f"Upload error: {e}")
         else:
-            image_url = form.student_image.data
+            image_url = student_data[6]
+            print("No file uploaded or no filename")
+            
+    
         
         first_name = form.first_name.data
         last_name = form.last_name.data
@@ -213,3 +219,4 @@ def existing_student(id_number):
     if student:
         return True  
     return False  
+

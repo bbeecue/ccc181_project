@@ -15,7 +15,7 @@ class StudentForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
     gender = RadioField('Gender', choices=[('female', 'Female'), ('male', 'Male'), ('other', 'Other')], validators=[DataRequired()])
-    program = SelectField('Program', choices=[], validators=[DataRequired()])
+    program = SelectField('Program', choices=[])
     year_level = IntegerField('Year Level', validators=[DataRequired(), NumberRange(min=1, max=4)])
     submit = SubmitField('Submit')
     student_image = FileField('Upload Image:', validators=[
