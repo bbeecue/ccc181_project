@@ -76,8 +76,8 @@
 
                     <div class="modal-footer">
                         {% if student[6] %}
-                        <button type="button" class="btn btn-danger" 
-                                onclick="deleteImage('{{ student[0] }}')">
+                        <input type="hidden" name="delete_image" id="delete_image_{{ student[0] }}" value="">
+                        <button type="button" class="btn btn-danger delete-image-btn" data-student-id="{{ student[0] }}">
                             Delete Image
                         </button>
                         {% endif %}
@@ -104,6 +104,41 @@ function previewImage(event) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+function clearImageForm(event) {
+    const modal = event.target.closest('.modal');
+    const fileInput = modal.querySelector('input[type="file"]');
+    const imagePreview = modal.querySelector('img[id^="image-preview-"]');
+
+    // Clear file input and reset image preview to the original student image or placeholder
+    if (fileInput) fileInput.filename = "";
+    
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const deleteButtons = document.querySelectorAll(".delete-image-btn");
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const studentId = button.getAttribute("data-student-id");
+            const previewImage = document.getElementById(`image-preview-${studentId}`);
+            const deleteInput = document.getElementById(`delete_image_${studentId}`);
+            const fileInput = document.getElementById(`student_image_${studentId}`);
+            
+            // Set hidden input value to 'delete'
+            deleteInput.value = 'delete';
+
+            // Replace preview image with placeholder URL
+            previewImage.src = "https://res.cloudinary.com/dilqmvkog/image/upload/v1730199399/dowuupdz7jzgzsrv514j.png";
+            
+            // Clear file input
+            if (fileInput) fileInput.value = '';
+
+            // Optional: submit form directly if you want to perform delete on button click
+            document.getElementById(`studentForm-${studentId}`).submit();
+        });
+    });
+});
 
 </script>
 

@@ -129,13 +129,13 @@ def edit_student(id):
     form.id_number_year.data, form.id_number_unique.data = student_data[0].split('-')
     cursor.close()
     
-    
 
     cursor = db.cursor()
     cursor.execute("SELECT code, name FROM program")
     programs = cursor.fetchall()
     form.program.choices = [(program[0], program[1]) for program in programs]
     current_program_code = student_data[4]
+    student_image_url = student_data[6]
       
 
     if request.method == 'GET':  
@@ -145,37 +145,38 @@ def edit_student(id):
         form.program.data = current_program_code
         form.year_level.data = student_data[5]
         
+        
 
     if form.validate_on_submit():
-        id_number = id 
-        
-        image_file = request.files.get('student_image') 
-        image_url = None
-        
-        print(image_file)
-        if image_file and image_file.filename != '':
+        image_file = request.files.get('student_image')
+        delete_image_flag = request.form.get('delete_image') == 'delete'
+        image_url = student_image_url  # Default to current image
+
+        # Delete current image if requested
+        if delete_image_flag:
+            if student_image_url:
+                public_id = student_image_url.split('/')[-1].split('.')[0]  # Extract public ID from URL
+                destroy(public_id)  # Delete image from Cloudinary
+            image_url = None
+
+        # Update with new image if provided and delete old image
+        elif image_file and image_file.filename:
             try:
-                # Upload image to Cloudinary
                 upload_result = upload(image_file)
                 image_url = upload_result.get('secure_url')
+                if student_image_url:
+                    public_id = student_image_url.split('/')[-1].split('.')[0]
+                    destroy(public_id)
             except Exception as e:
                 form.student_image.errors.append(f"Failed to upload image: {e}")
                 print(f"Upload error: {e}")
-        else:
-            image_url = student_data[6]
-            print("No file uploaded or no filename")
-            
-    
-        
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        gender = form.gender.data
-        program = form.program.data
-        year_level = form.year_level.data
 
+        # Update database with new details and image URL
+        cursor = db.cursor()
         cursor.execute("""
-                UPDATE student SET first_name=%s, last_name=%s, gender=%s, program=%s, year_level=%s, image_url=%s WHERE id_number=%s
-            """, (first_name, last_name, gender, program, year_level, image_url, id_number))
+            UPDATE student SET first_name=%s, last_name=%s, gender=%s, program=%s, year_level=%s, image_url=%s 
+            WHERE id_number=%s
+        """, (form.first_name.data, form.last_name.data, form.gender.data, form.program.data, form.year_level.data, image_url, id))
         db.commit()
         cursor.close()
 
@@ -191,11 +192,17 @@ def edit_student(id):
 def delete_student(id):
     db = current_app.config['db']
     cursor = db.cursor()
+    cursor.execute("SELECT * FROM student WHERE id_number=%s", (id,))
+    student_data = cursor.fetchone()
+    student_image_url = student_data[6]
 
     try:
-        
         cursor.execute("DELETE FROM student WHERE id_number = %s", (id,))
         db.commit()
+        
+        if student_image_url:
+                public_id = student_image_url.split('/')[-1].split('.')[0]  # Extract public ID from URL
+                destroy(public_id)
     except Exception as e:
         db.rollback()
         print(f"Error deleting student: {e}")
