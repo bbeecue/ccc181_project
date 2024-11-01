@@ -18,6 +18,4 @@ class StudentForm(FlaskForm):
     program = SelectField('Program', choices=[])
     year_level = IntegerField('Year Level', validators=[DataRequired(), NumberRange(min=1, max=4)])
     submit = SubmitField('Submit')
-    student_image = FileField('Upload Image:', validators=[
-                                                          FileAllowed(['jpg', 'jpeg', 'png', 'webp'], "This file has an invalid image format.",)
-                                                          ])
+    student_image = FileField('Upload Image:')

@@ -92,6 +92,16 @@
                       {{ form.last_name.errors[0] }}
                   </div>
                   {% endif %}
+                  {% if form.last_name.errors %}
+                  <div class="text-danger mb-3">
+                      {{ form.last_name.errors[0] }}
+                  </div>
+                  {% endif %}
+                  {% if form.student_image.errors %}
+                  <div class="text-danger mb-3">
+                    {{ form.student_image.errors[0] }}
+                  </div>
+                  {% endif %}
                   {% if students|length == 0 %}
                       <tr>
                           <td colspan="6" class="text-center">Student not found</td>

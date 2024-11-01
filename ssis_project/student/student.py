@@ -46,6 +46,10 @@ def student_page():
 
     return render_template('student.html', form=form, students=students)
 
+def is_image_file(filename):
+    allowed_extensions = {'jpg', 'jpeg', 'png', 'svg'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
 @student_bp.route('/add', methods=['GET', 'POST'])
 def add_student():
     form = StudentForm()
@@ -69,13 +73,17 @@ def add_student():
         image_url = None
 
         if image_file and image_file.filename != '':
-            try:
-                # Upload image to Cloudinary
-                upload_result = upload(image_file)
-                image_url = upload_result.get('secure_url')
-            except Exception as e:
-                form.student_image.errors.append(f"Failed to upload image: {e}")
-                print(f"Upload error: {e}")
+            if is_image_file(image_file.filename):
+                try:
+                    # Upload image to Cloudinary
+                    upload_result = upload(image_file)
+                    image_url = upload_result.get('secure_url')
+                except Exception as e:
+                    form.student_image.errors.append(f"Failed to upload image: {e}")
+                    print(f"Upload error: {e}")
+            else:
+                form.student_image.errors.append("Invalid file format. Please upload an image file (jpg, jpeg, png, svg).")
+                
         else:
             print("No file uploaded or file name is empty.")
         
@@ -136,6 +144,9 @@ def edit_student(id):
     form.program.choices = [(program[0], program[1]) for program in programs]
     current_program_code = student_data[4]
     student_image_url = student_data[6]
+    
+    cursor.execute("SELECT id_number, first_name, last_name, gender, program, year_level, image_url FROM student")
+    students = cursor.fetchall()
       
 
     if request.method == 'GET':  
@@ -161,16 +172,20 @@ def edit_student(id):
 
         # Update with new image if provided and delete old image
         elif image_file and image_file.filename:
-            try:
-                upload_result = upload(image_file)
-                image_url = upload_result.get('secure_url')
-                if student_image_url:
-                    public_id = student_image_url.split('/')[-1].split('.')[0]
-                    destroy(public_id)
-            except Exception as e:
-                form.student_image.errors.append(f"Failed to upload image: {e}")
-                print(f"Upload error: {e}")
-
+            if is_image_file(image_file.filename):
+                try:
+                    upload_result = upload(image_file)
+                    image_url = upload_result.get('secure_url')
+                    if student_image_url:
+                        public_id = student_image_url.split('/')[-1].split('.')[0]
+                        destroy(public_id)
+                except Exception as e:
+                    form.student_image.errors.append(f"Failed to upload image: {e}")
+                    print(f"Upload error: {e}")
+            else:
+                form.student_image.errors.append("Inavalid Image format: Only JPEG, JPG, PNG, and SVG are accepted.")
+                return render_template('student.html', form=form, programs=programs, students=students) 
+            
         # Update database with new details and image URL
         cursor = db.cursor()
         cursor.execute("""
@@ -182,7 +197,6 @@ def edit_student(id):
 
         return redirect(url_for('student.student_page'))
 
-    print(form.errors)
 
     return render_template('student.html', form=form, programs=programs)
 
