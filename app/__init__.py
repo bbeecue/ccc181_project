@@ -45,13 +45,13 @@ def create_app():
     from .main import main_bp
     app.register_blueprint(main_bp)
     
-    from .student.student import student_bp
+    from .student.student_controller import student_bp
     app.register_blueprint(student_bp)
     
-    from .program.program import program_bp
+    from .program.program_controller import program_bp
     app.register_blueprint(program_bp)
     
-    from .college.college import college_bp
+    from .college.college_controller import college_bp
     app.register_blueprint(college_bp)
     
     

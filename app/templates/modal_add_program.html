@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ url_for('program.add_program') }}" method="POST">
+                <form action="{{ url_for('program.add_program_route') }}" method="POST">
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
                         {{ form.program_code.label }}
