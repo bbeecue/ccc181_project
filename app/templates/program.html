@@ -75,7 +75,6 @@
                                 <td>{{ program[2] }}</td>
                                 <td>
                                     <a href="" class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modal-edit-program-{{ program[0] }}"><i class="bi bi-pencil"></i></a>
-                                    <!-- Delete Form -->
                                     <form action="{{ url_for('program.delete_program_route', program_code=program[0]) }}" method="POST" style="display:inline;">
                                         {{ form.hidden_tag() }} 
                                         <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{program[1]}}?')"><i class="bi bi-trash"></i></button>
@@ -96,7 +95,7 @@
 <script>
     function setSearchBy(value, element) {
         document.getElementById('search_by').value = value;
-        document.getElementById('searchButton').textContent = value; // Update the button text
+        document.getElementById('searchButton').textContent = value; 
     }
 </script>
 
