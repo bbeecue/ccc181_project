@@ -20,6 +20,24 @@ class ProgramModel:
             cursor.execute(sql, params) if params else cursor.execute(sql)
             return cursor.fetchall()
 
+    def count_programs(self, search_query=None, search_by=None):
+        """Count the total number of programs matching a search query."""
+        sql = "SELECT COUNT(*) FROM program"
+        params = None
+
+        if search_query and search_by:
+            if search_by == "Program Code":
+                sql += " WHERE code LIKE %s"
+            elif search_by == "Program Name":
+                sql += " WHERE name LIKE %s"
+            elif search_by == "College Code":
+                sql += " WHERE college LIKE %s"
+            params = (f"%{search_query}%",)
+
+        with self.db.cursor() as cursor:
+            cursor.execute(sql, params) if params else cursor.execute(sql)
+            return cursor.fetchone()[0]
+
     def get_program(self, program_code):
         """Fetch a single program by its code."""
         with self.db.cursor() as cursor:

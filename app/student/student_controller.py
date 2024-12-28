@@ -18,14 +18,31 @@ def student_page():
 
     search_query = request.args.get('search', '')
     search_by = request.args.get('search_by', 'ID Number')
+    page = int(request.args.get('page', 1))
+    students_per_page = 10
 
     programs = program_model.get_programs()
-    students = student_model.get_students(search_query, search_by)
+    total_students = student_model.count_students(search_query, search_by)
+    students = student_model.get_students(search_query, search_by, page, students_per_page)
+
+    total_pages = (total_students + students_per_page - 1) // students_per_page
+    page_range = 3
+    start_page = max(1, page - page_range)
+    end_page = min(total_pages, page + page_range)
 
     form = StudentForm()
-    form.program.choices = [(None, 'None')] + [(program[0], program[1]) for program in programs]
+    form.program.choices = [(program[0], program[1]) for program in programs]
 
-    return render_template('student.html', form=form, students=students)
+    return render_template(
+        'student.html',
+        form=form,
+        students=students,
+        page=page,
+        total_pages=total_pages,
+        start_page=start_page,
+        end_page=end_page
+    )
+
 
 @student_bp.route('/add', methods=['POST'])
 def add_student_route():

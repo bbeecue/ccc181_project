@@ -82,7 +82,20 @@ body{
     color: rgb(230, 171, 144);
 }
 
+.student-course {
+    font-size: small;
+    white-space: normal; 
+    word-wrap: break-word; 
+    max-width: 155px; 
+}
 
+.student-id{
+    width: 100px;  
+}
+
+.student-image{
+    width: 100px;
+}
 
 /*---MODAL STYLES---*/
 
@@ -131,4 +144,35 @@ body{
 
 #student_id_label{
     text-decoration: underline;
+}
+
+
+/*---PAGINATION STYLES---*/
+.pagination > li > a
+{
+    background-color: antiquewhite;
+    color: rgb(79, 22, 22);
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover
+{
+    color: antiquewhite;
+    background-color: rgb(79, 22, 22);
+    border-color:antiquewhite;
+}
+
+.pagination > .active > a
+{
+    color: antiquewhite;
+    background-color: rgb(79, 22, 22) !important;
+    border: solid 1px rgb(79, 22, 22) !important;
+}
+
+.pagination > .active > a:hover
+{
+    background-color: rgb(79, 22, 22) !important;
+    border: solid 1px rgb(79, 22, 22);
 }

@@ -2,9 +2,15 @@ class StudentModel:
     def __init__(self, db):
         self.db = db
 
-    def get_students(self, search_query='', search_by='ID Number'):
+    def get_students(self, search_query='', search_by='ID Number', page=1, students_per_page=10):
         cursor = self.db.cursor()
-        sql = "SELECT id_number, first_name, last_name, gender, program, year_level, image_url FROM student"
+
+        sql = """
+            SELECT s.id_number, s.first_name, s.last_name, s.gender, p.code AS program_code, s.year_level, s.image_url, c.name AS college_name
+            FROM student s
+            LEFT JOIN program p ON s.program = p.code
+            LEFT JOIN college c ON p.college = c.code
+        """
 
         if search_query:
             if search_by == "ID Number":
@@ -17,15 +23,73 @@ class StudentModel:
                 sql += " WHERE program LIKE %s"
             elif search_by == "Year Level":
                 sql += " WHERE year_level LIKE %s"
+            elif search_by == "College":
+                sql += " WHERE c.name LIKE %s"   
 
             search_pattern = f"%{search_query}%" if search_by != "Gender" else search_query
-            cursor.execute(sql, (search_pattern,))
+            params = (search_pattern,)
         else:
-            cursor.execute(sql)
+            params = ()
+        
+        sql += " LIMIT %s OFFSET %s"
+        offset = (page - 1) * students_per_page
+        params += (students_per_page, offset)
 
+        cursor.execute(sql, params)
         students = cursor.fetchall()
         cursor.close()
-        return students
+
+        student_list = []
+        for student in students:
+            student_dict = {
+                'id_number': student[0],
+                'first_name': student[1],
+                'last_name': student[2],
+                'gender': student[3],
+                'program': student[4],
+                'year_level': student[5],
+                'image_url': student[6],
+                'college': student[7]
+            }
+            student_list.append(student_dict)
+
+        return student_list
+
+
+    
+    def count_students(self, search_query='', search_by='ID Number'):
+        cursor = self.db.cursor()
+        sql = """
+            SELECT COUNT(*) FROM student s
+            LEFT JOIN program p ON s.program = p.code
+            LEFT JOIN college c ON p.college = c.code
+            """
+
+        if search_query:
+            if search_by == "ID Number":
+                sql += " WHERE id_number LIKE %s"
+            elif search_by == "Name":
+                sql += " WHERE CONCAT(first_name, ' ', last_name) LIKE %s"
+            elif search_by == "Gender":
+                sql += " WHERE LOWER(gender) = LOWER(%s)"
+            elif search_by == "Program":
+                sql += " WHERE program LIKE %s"
+            elif search_by == "Year Level":
+                sql += " WHERE year_level LIKE %s"
+            elif search_by == "College":
+                sql += " WHERE c.name LIKE %s" 
+            
+
+            search_pattern = f"%{search_query}%" if search_by != "Gender" else search_query
+            params = (search_pattern,)
+        else:
+            params = ()
+
+        cursor.execute(sql, params)
+        total_students = cursor.fetchone()[0]
+        cursor.close()
+
+        return total_students
 
     def add_student(self, student_data):
         cursor = self.db.cursor()

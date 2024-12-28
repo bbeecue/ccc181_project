@@ -1,4 +1,4 @@
-<div class="modal fade modal-lg" id="modal-edit-student-{{ student[0] }}" tabindex="-1" aria-labelledby="modal-edit-student-label" aria-hidden="true">
+<div class="modal fade modal-lg" id="modal-edit-student-{{ student['id_number'] }}" tabindex="-1" aria-labelledby="modal-edit-student-label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -6,38 +6,35 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ url_for('student.edit_student', id=student[0]) }}" enctype="multipart/form-data" method="POST">
+                <form action="{{ url_for('student.edit_student', id=student['id_number']) }}" enctype="multipart/form-data" method="POST">
                     {{ form.hidden_tag() }}
-                    <label for="id_number" class="form-label">Editing Student: {{ student[0] }} </label>
+                    <label for="id_number" class="form-label">Editing Student: {{ student['id_number'] }} </label>
                     <input type="hidden" name="id_number_year" value="{{ form.id_number_year.data }}">
                     <input type="hidden" name="id_number_unique" value="{{ form.id_number_unique.data }}">
 
-                   
                     <div class="mb-3 text-center">
-                        <img id="image-preview-{{ student[0] }}" 
-                             src="{{ student[6] or 'https://res.cloudinary.com/dilqmvkog/image/upload/v1730199399/dowuupdz7jzgzsrv514j.png' }}" 
+                        <img id="image-preview-{{ student['id_number'] }}" 
+                             src="{{ student['image_url'] or 'https://res.cloudinary.com/dilqmvkog/image/upload/v1730199399/dowuupdz7jzgzsrv514j.png' }}" 
                              alt="Image Preview" 
                              class="img-thumbnail rounded-circle" 
                              style="width: 170px; height: 170px; object-fit: cover;">
                     </div>
                     
                     <div class="mb-3">
-                        <label for="student_image_{{ student[0] }}" class="form-label">Upload New Student Image</label>
+                        <label for="student_image_{{ student['id_number'] }}" class="form-label">Upload New Student Image</label>
                         <input type="file" name="student_image" 
-                               id="student_image_{{ student[0] }}" 
+                               id="student_image_{{ student['id_number'] }}" 
                                class="form-control" 
                                onchange="previewImage(event)">
                     </div>
 
-                    
-
                     <div class="mb-3">
                         {{ form.first_name.label }}
-                        {{ form.first_name(class="form-control", value=student[1]) }}
+                        {{ form.first_name(class="form-control", value=student['first_name']) }}
                     </div>
                     <div class="mb-3">
                         {{ form.last_name.label }}
-                        {{ form.last_name(class="form-control", value=student[2]) }}
+                        {{ form.last_name(class="form-control", value=student['last_name']) }}
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Gender</label>
@@ -56,12 +53,12 @@
                             <div class="input-group-prepend">
                                 <label class="input-group-text">Program</label>
                             </div>
-                        
                             <select class="form-control" name="program">
-                                <option value="" {% if student[4] is none %}selected{% endif %}>Unenrolled</option>
+                                {% if form.program.label == none %}
+                                <option value="" selected>Unenrolled</option>
+                                {% endif %}
                                 {% for code, name in form.program.choices %}
-                                    <option value="{{ code }}" 
-                                        {% if student[4] == code %}selected{% endif %}>
+                                    <option value="{{ code }}" {% if student['program'] == code %}selected{% endif %}>
                                         {{ name }}
                                     </option>
                                 {% endfor %}
@@ -70,14 +67,14 @@
                         
                         <div class="col">
                             {{ form.year_level.label }}
-                            {{ form.year_level(class="form-control", value=student[5] ) }}
+                            {{ form.year_level(class="form-control", value=student['year_level'] ) }}
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        {% if student[6] %}
-                        <input type="hidden" name="delete_image" id="delete_image_{{ student[0] }}" value="">
-                        <button type="button" class="btn btn-danger delete-image-btn" data-student-id="{{ student[0] }}">
+                        {% if student['image_url'] %}
+                        <input type="hidden" name="delete_image" id="delete_image_{{ student['id_number'] }}" value="">
+                        <button type="button" class="btn btn-danger delete-image-btn" data-student-id="{{ student['id_number'] }}">
                             Delete Image
                         </button>
                         {% endif %}
@@ -89,6 +86,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script>
 function previewImage(event) {
@@ -111,8 +110,8 @@ function clearImageForm(event) {
     const imagePreview = modal.querySelector('img[id^="image-preview-"]');
 
     // Clear file input and reset image preview to the original student image or placeholder
-    if (fileInput) fileInput.filename = "";
-    
+    if (fileInput) fileInput.value = "";
+    if (imagePreview) imagePreview.src = "https://res.cloudinary.com/dilqmvkog/image/upload/v1730199399/dowuupdz7jzgzsrv514j.png";
 }
 
 document.addEventListener("DOMContentLoaded", function () {
